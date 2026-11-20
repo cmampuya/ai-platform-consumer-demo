@@ -1,6 +1,6 @@
 {
   "lock_version": 1,
-  "source_revision": "d65e19eb2092f3c65048e15725b1ef2edf9934f0",
+  "source_revision": "4988fd960e75bd3bc0bb00b0ace39325f69503eb",
   "targets": {
     "claude-code": {
       "adapter_version": "0.1.0",
@@ -12,6 +12,11 @@
           "sha256": "59a972e25de241427ab249aafe4461758155294fa314ada0db17ace539b457bc"
         }
       ],
+      "profile": "default"
+    },
+    "gemini-cli": {
+      "adapter_version": "0.1.0",
+      "files": [],
       "profile": "default"
     }
   }
