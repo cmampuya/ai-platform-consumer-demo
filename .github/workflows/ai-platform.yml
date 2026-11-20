@@ -1,0 +1,62 @@
+# Consumer CI for ai-engineering-platform (copy to .github/workflows/ai-platform.yml).
+# Fails when the installed files differ from the pinned platform (.ai-platform submodule):
+# run `ai-platform install` locally and commit the result.
+# Adjust TARGETS and PROFILE to the assistants and profile the project uses.
+#
+# Security: this job runs code from the .ai-platform submodule, which a pull request can change.
+# Keep it on `pull_request` (never `pull_request_target`), with read-only permissions and no
+# secrets, and keep the "official platform" check below.
+name: ai-platform
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  PROFILE: default
+  TARGETS: claude-code
+  PLATFORM_URL: https://github.com/cmampuya/ai-engineering-platform.git
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      # Actions pinned by commit SHA (supply chain); tags in comments.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: false # checked below before anything from it is fetched or run
+      - name: .ai-platform is the official platform, pinned to a release tag
+        run: |
+          set -eu
+          # The gitlink at path .ai-platform (what runs), not a submodule name.
+          mode="$(git ls-files --stage -- .ai-platform | awk '{print $1}')"
+          [ "$mode" = "160000" ] || { echo "::error::.ai-platform is not a submodule"; exit 1; }
+          name="$(git config -f .gitmodules --get-regexp '^submodule\..*\.path$' \
+            | awk '$2 == ".ai-platform" {sub(/^submodule\./, "", $1); sub(/\.path$/, "", $1); print $1}')"
+          [ "$(printf '%s\n' "$name" | grep -c .)" = "1" ] \
+            || { echo "::error::expected exactly one submodule at path .ai-platform"; exit 1; }
+          url="$(git config -f .gitmodules --get "submodule.$name.url")"
+          [ "$url" = "$PLATFORM_URL" ] \
+            || { echo "::error::.ai-platform points to '$url', expected $PLATFORM_URL"; exit 1; }
+          git -c protocol.file.allow=never submodule update --init -- .ai-platform
+          # Any commit of the official repository is fetchable (pull request refs included):
+          # require a release tag, which the platform protects against deletion and rewrite.
+          git -C .ai-platform tag --points-at HEAD | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$' \
+            || { echo "::error::.ai-platform is not pinned to a release tag"; exit 1; }
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          python-version: "3.13"
+      - name: Validate the pinned platform
+        run: uv run --project .ai-platform --locked ai-platform --root .ai-platform validate
+      - name: Installed files match the pinned platform
+        run: |
+          for target in $TARGETS; do
+            uv run --project .ai-platform --locked ai-platform --root .ai-platform \
+              plan --target "$target" --profile "$PROFILE" --check
+          done
+      - name: No local drift from the lock
+        run: uv run --project .ai-platform --locked ai-platform --root .ai-platform status
