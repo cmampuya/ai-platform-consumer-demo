@@ -26,3 +26,4 @@
 
 ## Scope of these guidelines
 These guidelines steer assistant behaviour; they are not a security control. Real permissions must be enforced by the assistant's settings, the operating system, sandboxes, containers and CI runners.
+hand edit
