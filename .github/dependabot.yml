@@ -11,7 +11,7 @@ updates:
     schedule:
       interval: weekly
     # Demo only: no cooldown, to observe the behaviour right after a release.
-    # Test 2 (untagged commit after v0.2.0). Real consumers keep Dependabot's default 3-day cooldown.
+    # Test 3 (release v0.2.1). Real consumers keep Dependabot's default 3-day cooldown.
     cooldown:
       default-days: 0
     commit-message:
