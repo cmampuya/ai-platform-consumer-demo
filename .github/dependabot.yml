@@ -1,0 +1,14 @@
+# Consumer Dependabot config (copy to .github/dependabot.yml, or merge into an existing one).
+# Opens a PR when a newer platform release tag exists. Behaviour verified on
+# cmampuya/ai-platform-consumer-demo (see docs/consumers.md); GitHub's documentation still
+# describes "latest commit of the branch", the code (dependabot-core #13052) prefers semver tags.
+# After merging such a PR, run `ai-platform install` and commit the result: the consumer CI
+# fails until then. A release never updates a consumer automatically.
+version: 2
+updates:
+  - package-ecosystem: gitsubmodule
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "chore(ai-platform)"
