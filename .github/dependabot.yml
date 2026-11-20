@@ -10,5 +10,9 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    # Demo only: no cooldown, to observe the behaviour right after a release.
+    # Real consumers keep Dependabot's default 3-day cooldown.
+    cooldown:
+      default-days: 0
     commit-message:
       prefix: "chore(ai-platform)"
