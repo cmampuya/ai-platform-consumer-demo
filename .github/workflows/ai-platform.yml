@@ -18,7 +18,7 @@ permissions:
 
 env:
   PROFILE: default
-  TARGETS: claude-code
+  TARGETS: claude-code gemini-cli
   PLATFORM_URL: https://github.com/cmampuya/ai-engineering-platform.git
 
 jobs:
