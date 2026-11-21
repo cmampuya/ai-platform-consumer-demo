@@ -1,6 +1,6 @@
 {
   "lock_version": 1,
-  "source_revision": "4988fd960e75bd3bc0bb00b0ace39325f69503eb",
+  "source_revision": "fbc27b696f0a16bb424cd6074275743a743bb99b",
   "targets": {
     "claude-code": {
       "adapter_version": "0.1.0",
